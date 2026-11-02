@@ -1,12 +1,20 @@
+@apiUrl = http://127.0.0.1:3000/api/v1
+
 
 ### get all cats
-GET http://127.0.0.1:3000/api/v1/cats
+GET {{apiUrl}}/cats
 
 #### get cat by id
-GET http://127.0.0.1:3000/api/v1/cats/1
+GET {{apiUrl}}/cats/1
+
+#### delete cat by id
+DELETE {{apiUrl}}/cats/1
+
+### get cat by id not found
+GET {{apiUrl}}/cats/999
 
 ### post new cat
-POST http://127.0.0.1:3000/api/v1/cats
+POST {{apiUrl}}/cats
 Content-Type: application/json
 
 {
@@ -17,4 +25,13 @@ Content-Type: application/json
     "weight": 4.5,
     "owner": "Kimberly",
     "image": "https://placecats.com/300/200"
+}
+
+### edit existing cat
+PUT {{apiUrl}}/cats/3
+Content-Type: application/json
+
+{
+    "weight": 5.0,
+    "owner": "Kimberly Smith"
 }
