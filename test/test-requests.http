@@ -1,0 +1,20 @@
+
+### get all cats
+GET http://127.0.0.1:3000/api/v1/cats
+
+#### get cat by id
+GET http://127.0.0.1:3000/api/v1/cats/1
+
+### post new cat
+POST http://127.0.0.1:3000/api/v1/cats
+Content-Type: application/json
+
+{
+    "cat_id": 4,
+    "name": "Mittens",
+    "age": 2,
+    "birthdate": "2021-05-15",
+    "weight": 4.5,
+    "owner": "Kimberly",
+    "image": "https://placecats.com/300/200"
+}
