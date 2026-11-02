@@ -57,6 +57,8 @@ app.get('/api/v1/cats/:id', (req, res) => {
   res.sendStatus(404);
 });
 
+app.use(express.json());
+
 app.post('/api/v1/cats', (req, res) => {
   console.log('request body', req.body);
   cats.push(req.body);
@@ -70,5 +72,3 @@ app.listen(port, hostname, () => {
 });
 
 app.use('/public', express.static('public'));
-
-app.use(express.json());
