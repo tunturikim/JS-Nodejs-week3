@@ -8,13 +8,17 @@ import {
 } from '../controller/cat-controller.js';
 import logger from '../../middlewares/logger.js';
 
-// Multer import
+// Multer and sharp import
 import multer from 'multer';
+import {createThumbnail} from '../../middlewares/thumbnail.js';
 const upload = multer({dest: 'uploads/'});
 
 const catRouter = express.Router();
 // Bind the getCats function to the GET/POST request for the /cats route
-catRouter.route('/').get(logger, getCats).post(upload.single('image'), postCat);
+catRouter
+  .route('/')
+  .get(logger, getCats)
+  .post(upload.single('image'), createThumbnail, postCat);
 // Bind the getCatById function to the GET request for the /cats/:id route
 catRouter.route('/:id').get(getCatById).delete(deleteCatById).put(putCatById);
 
