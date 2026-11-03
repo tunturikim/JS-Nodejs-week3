@@ -8,7 +8,13 @@ import {
 
 export const getCats = (req, res) => {
   // This is an API endpoint that returns a list of cats
-  res.json(listAllCats());
+  console.log('Ollaan controllerissa');
+  //res.json(listAllCats());
+  res.json({
+    requestTime: req.requestTime,
+    time: req.requestTime,
+    cats: listAllCats(),
+  });
 };
 
 export const getWelcomeMessage = (req, res) => {
@@ -26,9 +32,18 @@ export const getCatById = (req, res) => {
 };
 
 export const postCat = (req, res) => {
-  console.log('request body', req.body);
-  const newId = addCat(req.body);
-  res.status(201).json({cat_id: newId});
+  console.log('request', req.body);
+  console.log(req.file);
+  console.log(req.file.filename);
+  req.body.filename = req.file.filename;
+
+  const result = addCat(req.body);
+  if (result) {
+    res.status(201);
+    res.json({message: 'New cat added.', result});
+  } else {
+    res.sendStatus(400);
+  }
 };
 
 export const deleteCatById = (req, res) => {
