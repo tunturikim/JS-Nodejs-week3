@@ -10,7 +10,7 @@ import logger from '../../middlewares/logger.js';
 
 // Multer and sharp import
 import multer from 'multer';
-import {createThumbnail} from '../../middlewares/thumbnail.js';
+import {createThumbnail} from '../../middlewares/upload.js';
 const upload = multer({dest: 'uploads/'});
 
 const catRouter = express.Router();
