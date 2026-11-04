@@ -37,39 +37,29 @@ Content-Type: application/json
     "owner": "Kimberly Smith"
 }
 
+### post cat with image
+POST http://127.0.0.1:3000/api/v1/cats HTTP/1.1
+Content-Type: multipart/form-data; boundary=MyBoundary
 
-### USERS
+--MyBoundary
+Content-Disposition: form-data; name="name"
 
-### get all users
-GET {{apiUrl}}/users
+Misu
+--MyBoundary
+Content-Disposition: form-data; name="weight"
 
-#### get user by id
-GET {{apiUrl}}/users/3609
+6
+--MyBoundary
+Content-Disposition: form-data; name="owner"
 
-#### delete user by id
-DELETE {{apiUrl}}/users/3609
+3602
+--MyBoundary
+Content-Disposition: form-data; name="birthdate"
 
-### get user by id not found
-GET {{apiUrl}}/users/999
+2023-10-08
+--MyBoundary
+Content-Disposition: form-data; name="image"; filename="cat.jpg"
+Content-Type: image/jpeg
 
-### post new user
-POST {{apiUrl}}/users
-Content-Type: application/json
-
-{
-    "name": "Kissa koira",
-    "username": "kissa_koira",
-    "email": "kissa.koira@example.com",
-    "role": "user",
-    "password": "password123"
-}
-
-### edit existing user
-PUT {{apiUrl}}/users/3609
-Content-Type: application/json
-
-{
-    "username": "mikko_koira",
-    "email": "mikko.koira@example.com",
-    "role": "admin"
-}
+< ./cat.jpg
+--MyBoundary--

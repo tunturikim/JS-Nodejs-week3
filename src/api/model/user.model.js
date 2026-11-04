@@ -1,4 +1,5 @@
 // mock data for user model
+/*
 const userItems = [
   {
     user_id: 3609,
