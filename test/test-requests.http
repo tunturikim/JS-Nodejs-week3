@@ -63,3 +63,40 @@ Content-Type: image/jpeg
 
 < ./cat.jpg
 --MyBoundary--
+
+
+### USERS
+
+### get all users
+GET {{apiUrl}}/users
+
+#### get user by id
+GET {{apiUrl}}/users/3609
+
+#### delete user by id
+DELETE {{apiUrl}}/users/3609
+
+### get user by id not found
+GET {{apiUrl}}/users/999
+
+### post new user
+POST {{apiUrl}}/users
+Content-Type: application/json
+
+{
+    "name": "Kissa koira",
+    "username": "kissa_koira",
+    "email": "kissa.koira@example.com",
+    "role": "user",
+    "password": "password123"
+}
+
+### edit existing user
+PUT {{apiUrl}}/users/3609
+Content-Type: application/json
+
+{
+    "username": "mikko_koira",
+    "email": "mikko.koira@example.com",
+    "role": "admin"
+}
