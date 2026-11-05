@@ -7,6 +7,7 @@ import {
   putCatById,
 } from '../controller/cat-controller.js';
 import logger from '../../middlewares/logger.js';
+import {authenticateToken} from '../../middlewares/authentication.js';
 
 // Multer and sharp import
 import multer from 'multer';
@@ -18,7 +19,7 @@ const catRouter = express.Router();
 catRouter
   .route('/')
   .get(logger, getCats)
-  .post(upload.single('image'), createThumbnail, postCat);
+  .post(authenticateToken, upload.single('image'), createThumbnail, postCat);
 // Bind the getCatById function to the GET request for the /cats/:id route
 catRouter.route('/:id').get(getCatById).delete(deleteCatById).put(putCatById);
 

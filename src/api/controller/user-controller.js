@@ -1,18 +1,28 @@
 import {
   listAllUsers,
   findUserById,
+  findUserByUsername,
   addUser,
   removeUserById,
   modifyUserById,
-} from '../model/user.model.js';
+} from '../model/user-model.js';
+import bcrypt from 'bcrypt';
 
-export const getUsers = (req, res) => {
-  res.json(listAllUsers());
+export const getUsers = async (req, res) => {
+   // This is an API endpoint that returns a list of users
+  console.log('Ollaan controllerissa');
+  const users = await listAllUsers();
+  //res.json(listAllUsers());
+  res.json({
+    requestTime: req.requestTime,
+    time: req.requestTime,
+    users: users,
+  });
 };
 
-export const getUserById = (req, res) => {
+export const getUserById = async (req, res) => {
   const id = req.params.id;
-  const user = findUserById(id);
+  const user = await findUserById(id);
   if (user) {
     res.status(200).json(user);
   } else {
@@ -20,14 +30,31 @@ export const getUserById = (req, res) => {
   }
 };
 
-export const postUser = (req, res) => {
-  console.log('request body', req.body);
-  const newId = addUser(req.body);
-  res.status(201).json({user_id: newId});
+export const getUserByUsername =  async (req, res) => {
+  const username = req.params.username;
+  const user = await findUserByUsername(username);
+  if (user) {
+    res.status(200).json(user);
+  } else {
+    res.status(404).json({error: '404', message: 'User not found'});
+  }
 };
 
-export const deleteUserById = (req, res) => {
-  const result = removeUserById(req.params.id);
+export const postUser = async (req, res) => {
+  // Hash the password before storing it
+  req.body.password = await bcrypt.hashSync(req.body.password, 10); 
+  console.log('request body', req.body);
+  const result = await addUser(req.body);
+  if (result) {
+    res.status(201);
+    res.json({message: 'New user added.', result});
+  } else {
+    res.sendStatus(400);
+  }
+};
+
+export const deleteUserById = async (req, res) => {
+  const result = await removeUserById(req.params.id);
   if (result) {
     res.status(200).json({message: 'User deleted successfully'});
   } else {
@@ -35,8 +62,8 @@ export const deleteUserById = (req, res) => {
   }
 };
 
-export const putUserById = (req, res) => {
-  const result = modifyUserById(req.params.id, req.body);
+export const putUserById = async (req, res) => {
+  const result = await modifyUserById(req.params.id, req.body);
   if (result) {
     res.status(200).json({message: 'User updated successfully'});
   } else {

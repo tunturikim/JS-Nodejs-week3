@@ -39,6 +39,7 @@ Content-Type: application/json
 ### post cat with image
 POST http://127.0.0.1:3000/api/v1/cats HTTP/1.1
 Content-Type: multipart/form-data; boundary=MyBoundary
+Authorization: Bearer <jwt-token>
 
 --MyBoundary
 Content-Disposition: form-data; name="cat_name"
@@ -74,6 +75,9 @@ GET {{apiUrl}}/users
 #### get user by id
 GET {{apiUrl}}/users/3609
 
+#### get user by username
+GET {{apiUrl}}/users/username/MattiMeikalainen
+
 #### delete user by id
 DELETE {{apiUrl}}/users/3609
 
@@ -81,15 +85,15 @@ DELETE {{apiUrl}}/users/3609
 GET {{apiUrl}}/users/999
 
 ### post new user
-POST {{apiUrl}}/users
+POST {{apiUrl}}/auth/login
 Content-Type: application/json
 
 {
-    "name": "Kissa koira",
-    "username": "kissa_koira",
-    "email": "kissa.koira@example.com",
-    "role": "user",
-    "password": "password123"
+    "name": "Matti Meikäläinen",
+    "username": "MattiMeikalainen",
+    "email": "matti.meikalainen@example.com",
+    "password": "password123",
+    "role": "user"
 }
 
 ### edit existing user
