@@ -1,68 +1,52 @@
-// Mock data for cats
-const cats = [
-  {
-    cat_id: 3,
-    name: 'Misu',
-    age: 2,
-    birthdate: '2021-05-15',
-    weight: 4.5,
-    owner: 'Alice',
-    image: 'https://placekitten.com/200/300',
-  },
-  {
-    cat_id: 2,
-    name: 'Kisu',
-    age: 3,
-    birthdate: '2020-06-20',
-    weight: 5.2,
-    owner: 'Bob',
-    image: 'https://placekitten.com/300/200',
-  },
-  {
-    cat_id: 1,
-    name: 'Pörrö',
-    age: 1,
-    birthdate: '2022-01-10',
-    weight: 3.8,
-    owner: 'Charlie',
-    image: 'https://placecats.com/300/200',
-  },
-];
+// Note: db functions are async and must be called with await from the controller
+// How to handle errors in controller?
+import promisePool from '../../utils/database.js';
 
-const listAllCats = () => {
-  return cats;
+const listAllCats = async () => {
+    const [rows] = await promisePool.query('SELECT * FROM wsk_cats');
+    console.log('rows', rows);
+    return rows;
 };
 
-const findCatById = (id) => {
-  return cats.find((item) => item.cat_id == id);
+const findCatById = async (id) => {
+    const [rows] = await promisePool.execute('SELECT * FROM wsk_cats WHERE cat_id = ?', [id]);
+    console.log('rows', rows);
+     if (rows.length === 0) {
+        return false;
+     }
+     return rows[0];
 };
 
-const addCat = (cat) => {
-  const {name, age, birthdate, weight, owner, image} = cat;
-  const newId = cats[0].cat_id + 1;
-  cats.unshift({
-    cat_id: newId,
-    name,
-    age,
-    birthdate,
-    weight,
-    owner,
-    image,
-  });
-  return newId;
+const addCat = async (cat) => {
+  const {cat_name, weight, owner, filename, birthdate} = cat;
+  const sql = `INSERT INTO wsk_cats (cat_name, weight, owner, filename, birthdate)
+               VALUES (?, ?, ?, ?, ?)`;
+  const params = [cat_name, weight, owner, filename, birthdate];
+    const rows = await promisePool.execute(sql, params);
+    console.log('rows', rows);
+     if (rows[0].affectedRows === 0) {
+        return false;
+     }
+    return {cat_id: rows[0].insertId};
 };
 
-const removeCatById = (id) => {
-  const index = cats.findIndex((cat) => cat.cat_id == id);
-  cats.splice(index, 1);
-  return index !== -1;
+const modifyCatById = async (cat, id) => {
+  const sql = promisePool.format(`UPDATE wsk_cats SET ? WHERE cat_id = ?`, [cat, id]);
+    const rows = await promisePool.execute(sql);
+    console.log('rows', rows);
+     if (rows[0].affectedRows === 0) {
+        return false;
+     }
+     return {message: 'success'};
 };
 
-const modifyCatById = (id, newCatData) => {
-  const index = cats.findIndex((cat) => cat.cat_id == id);
-  // Create a new object that combines the existing cat data with the new data
-  cats[index] = {...cats[index], ...newCatData};
-  return index !== -1;
+const removeCatById = async (id) => {
+    const [rows] = await promisePool.execute('DELETE FROM wsk_cats WHERE cat_id = ?', [id]);
+    console.log('rows', rows);
+     if (rows.affectedRows === 0) {
+        return false;
+     }
+     return {message: 'success'};
 };
 
-export {listAllCats, findCatById, addCat, removeCatById, modifyCatById};
+export {listAllCats, findCatById, addCat, modifyCatById, removeCatById};
