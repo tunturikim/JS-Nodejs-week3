@@ -1,7 +1,6 @@
 @apiUrl = http://127.0.0.1:3000/api/v1
 
-#### CATS
-
+#### ---CATS---
 ### get all cats
 GET {{apiUrl}}/cats
 
@@ -29,12 +28,12 @@ Content-Type: application/json
 }
 
 ### edit existing cat
-PUT {{apiUrl}}/cats/3
+PUT {{apiUrl}}/cats/59
 Content-Type: application/json
 
 {
     "weight": 5.0,
-    "owner": "Kimberly Smith"
+    "cat_name": "Whiskers"
 }
 
 ### post cat with image
@@ -42,7 +41,7 @@ POST http://127.0.0.1:3000/api/v1/cats HTTP/1.1
 Content-Type: multipart/form-data; boundary=MyBoundary
 
 --MyBoundary
-Content-Disposition: form-data; name="name"
+Content-Disposition: form-data; name="cat_name"
 
 Misu
 --MyBoundary
@@ -52,7 +51,7 @@ Content-Disposition: form-data; name="weight"
 --MyBoundary
 Content-Disposition: form-data; name="owner"
 
-3602
+37
 --MyBoundary
 Content-Disposition: form-data; name="birthdate"
 
@@ -64,9 +63,11 @@ Content-Type: image/jpeg
 < ./cat.jpg
 --MyBoundary--
 
+### delete cat by id
+DELETE {{apiUrl}}/cats/58
 
-### USERS
 
+### ---USERS---
 ### get all users
 GET {{apiUrl}}/users
 

@@ -3,12 +3,16 @@
 import promisePool from '../../utils/database.js';
 
 const listAllCats = async () => {
+    // TODO: Liitä kyselyyn myös haku käyttäjätaulusta, jotta saadaan omistajan nimi mukaan. 
+    // Tällä hetkellä palautetaan vain omistajan id.
     const [rows] = await promisePool.query('SELECT * FROM wsk_cats');
     console.log('rows', rows);
     return rows;
 };
 
 const findCatById = async (id) => {
+    // TODO: Liitä kyselyyn myös haku käyttäjätaulusta, jotta saadaan omistajan nimi mukaan. 
+    // Tällä hetkellä palautetaan vain omistajan id. korvaa usereiden id omistajan nimellä.
     const [rows] = await promisePool.execute('SELECT * FROM wsk_cats WHERE cat_id = ?', [id]);
     console.log('rows', rows);
      if (rows.length === 0) {
@@ -30,14 +34,14 @@ const addCat = async (cat) => {
     return {cat_id: rows[0].insertId};
 };
 
-const modifyCatById = async (cat, id) => {
+const modifyCatById = async (id, cat) => {
   const sql = promisePool.format(`UPDATE wsk_cats SET ? WHERE cat_id = ?`, [cat, id]);
     const rows = await promisePool.execute(sql);
     console.log('rows', rows);
      if (rows[0].affectedRows === 0) {
         return false;
      }
-     return {message: 'success'};
+     return true;
 };
 
 const removeCatById = async (id) => {
@@ -46,7 +50,7 @@ const removeCatById = async (id) => {
      if (rows.affectedRows === 0) {
         return false;
      }
-     return {message: 'success'};
+     return true;
 };
 
 export {listAllCats, findCatById, addCat, modifyCatById, removeCatById};
