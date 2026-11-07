@@ -103,6 +103,9 @@ Content-Type: application/json
 }
 
 
+### cats of a user
+GET {{apiUrl}}/users/39/cats
+
 ### ---AUTH---
 ### login
 # @name login

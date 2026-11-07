@@ -4,6 +4,7 @@ import {
   addCat,
   removeCatById,
   modifyCatById,
+  listCatsByUserId,
 } from '../model/cat-model.js';
 
 export const getCats = async (req, res) => {
@@ -79,4 +80,9 @@ export const putCatById = async (req, res, next) => {
     error.status = 404;
     next(error);
   }
+};
+
+export const getCatsByUserId = async (req, res) => {
+  const cats = await listCatsByUserId(req.params.id);
+  res.json(cats);
 };

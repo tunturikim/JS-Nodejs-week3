@@ -62,16 +62,17 @@ Base URL: `/api/v1`
 | --- | --- | --- |
 | `POST /auth/login` | Log in with `username` and `password`, returns `{user, token}` (valid 24 h) | public |
 | `GET /auth/me` | Returns the user stored in the token | valid token |
-| `GET /cats` | List cats | public |
+| `GET /cats` | List cats (includes `owner_name`) | public |
 | `GET /cats/:id` | Get one cat | public |
 | `POST /cats` | Add a cat (multipart form: `cat_name`, `weight`, `birthdate`, file field `image`). The owner is always the logged-in user | valid token |
 | `PUT /cats/:id` | Update a cat | owner or admin |
 | `DELETE /cats/:id` | Delete a cat | owner or admin |
 | `GET /users` | List users | public |
 | `GET /users/:id` | Get one user | public |
+| `GET /users/:id/cats` | List the cats of one user | public |
 | `POST /users` | Register a user (password is stored as a bcrypt hash) | public |
 | `PUT /users/:id` | Update a user | the user or admin |
-| `DELETE /users/:id` | Delete a user | the user or admin |
+| `DELETE /users/:id` | Delete a user and the user's cats (in a transaction) | the user or admin |
 
 Send the token in the header `Authorization: Bearer <token>`.
 

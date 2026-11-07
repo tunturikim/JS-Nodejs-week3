@@ -16,8 +16,6 @@ const findUserByUsername = async (username) => {
 };
 
 const findUserById = async (id) => {
-    // TODO: Liitä kyselyyn myös haku käyttäjätaulusta, jotta saadaan omistajan nimi mukaan. 
-    // Tällä hetkellä palautetaan vain omistajan id. korvaa usereiden id omistajan nimellä.
     const [rows] = await promisePool.execute('SELECT * FROM wsk_users WHERE user_id = ?', [id]);
     console.log('rows', rows);
      if (rows.length === 0) {
@@ -49,13 +47,22 @@ const modifyUserById = async (id, user) => {
      return true;
 };
 
+// Deletes the user and the user's cats in one transaction:
+// either both succeed or nothing is deleted
 const removeUserById = async (id) => {
-    const [rows] = await promisePool.execute('DELETE FROM wsk_users WHERE user_id = ?', [id]);
-    console.log('rows', rows);
-     if (rows.affectedRows === 0) {
-        return false;
-     }
-     return true;
+    const connection = await promisePool.getConnection();
+    try {
+      await connection.beginTransaction();
+      await connection.execute('DELETE FROM wsk_cats WHERE owner = ?', [id]);
+      const [rows] = await connection.execute('DELETE FROM wsk_users WHERE user_id = ?', [id]);
+      await connection.commit();
+      return rows.affectedRows !== 0;
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
 };
 
 export {listAllUsers, findUserByUsername, findUserById, addUser, modifyUserById, removeUserById};
