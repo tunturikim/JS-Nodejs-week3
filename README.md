@@ -1,116 +1,110 @@
-# JavaScript Project Template
- 
-A starter template for plain JavaScript projects (HTML + JS in the browser) with formatting and linting preconfigured:
- 
-- **EditorConfig**: consistent indentation, line endings and encoding across editors
-- **Prettier**: automatic code formatting
-- **ESLint**: finds errors and enforces coding conventions
+# Cat API (Node.js + Express)
+
+REST API for cats and users, built for the Web Software Development course, week 3 ([course material](https://mattpe.github.io/wsk/#week-3---nodejs-express)).
+
+Features: Express routing (MVC structure), MySQL database access with prepared statements, image upload with thumbnails, JWT authentication, role-based authorization, input validation and JSON error handling.
+
 ## Requirements
- 
-- [Node.js](https://nodejs.org/) (LTS version). Check with `node -v`. Node is installed once on your computer, not per project.
-- [Git](https://git-scm.com/)
-- Visual Studio Code with these extensions:
-  - Prettier - Code formatter
-  - ESLint
-  - EditorConfig for VS Code
-## Getting started
- 
-1. Click **Use this template** > **Create a new repository** on GitHub.
-2. Clone your new repository:
-```bash
-   git clone https://github.com/<username>/<repository>.git
-   cd <repository>
-```
- 
-3. Install dependencies (creates the `node_modules` folder, which is not stored in Git):
-```bash
-   npm install
-```
- or 
- ```bash
-   npm.cmd install
-```
-4. Open the folder in VS Code and start coding.
-Run `npm install` once after every fresh clone. You do not need to run it every time you open the project.
- 
-## VS Code settings
- 
-Open settings with `Ctrl + ,` and check:
- 
-- **Editor: Default Formatter** is set to **Prettier**
-- **Editor: Format On Save** is enabled
-## Project structure
- 
-```
-.
-├── .editorconfig        # Editor style rules
-├── .prettierrc.json     # Prettier configuration
-├── eslint.config.js     # ESLint configuration
-├── .gitignore
-├── package.json         # Project info and dependencies
-├── example.html         # Sample HTML page
-└── main.js              # Sample JavaScript file
-```
- 
-## Usage
- 
-Open `example.html` in a browser (or use the VS Code Live Server extension). JavaScript is loaded as a module:
- 
-```html
-<script type="module" src="main.js" defer></script>
-```
- 
-Output from `console.log()` appears in the browser developer tools console (`F12`).
- 
-For course assignments, put each assignment in its own folder with its own HTML and JS files, and include the assignment number in the file and folder names, for example `assignment1/assignment1.html` and `assignment1/assignment1.js`.
- 
-## Linting
- 
-Run ESLint manually on all files:
- 
-```bash
-npx eslint .
-```
- 
-Automatically fix what can be fixed:
- 
-```bash
-npx eslint . --fix
-```
- 
-## Notes
- 
-- `node_modules`, `.vscode`, `.idea` and `.DS_Store` are ignored by Git (see `.gitignore`).
-- If ESLint warnings do not show up in the editor, make sure `npm install` has been run in the project folder.
- 
 
-## Authentication and authorization (assignment 6)
+- [Node.js](https://nodejs.org/) (LTS)
+- A MySQL / MariaDB database with the `wsk_users` and `wsk_cats` tables (course `cats-db.sql`)
 
-Required `.env` variables: `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` and `JWT_SECRET` (long random string used to sign tokens).
+## Setup
 
-Passwords are stored as bcrypt hashes. `POST /api/v1/auth/login` returns a JWT (valid 24 h). Send it to protected routes in the header `Authorization: Bearer <token>`.
+```bash
+npm install
+```
 
-| Route | Access |
+Create a `.env` file (see `.env.example`):
+
+| Variable | Description |
 | --- | --- |
-| `POST /api/v1/auth/login` | public |
-| `GET /api/v1/auth/me` | valid token |
-| `GET /api/v1/cats`, `GET /api/v1/cats/:id` | public |
-| `POST /api/v1/cats` | valid token; the owner is always the logged-in user |
-| `PUT`/`DELETE /api/v1/cats/:id` | the cat's owner or an admin |
-| `GET /api/v1/users`, `GET /api/v1/users/:id`, `POST /api/v1/users` | public |
-| `PUT`/`DELETE /api/v1/users/:id` | the user themselves or an admin |
+| `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` | Database connection |
+| `JWT_SECRET` | Long random string used to sign tokens |
 
-Status codes: missing token `401`, invalid or expired token `403`, wrong credentials `401`, modifying another user `403`, modifying a cat you do not own `404` (cat not found or not yours).
+`.env` is ignored by Git and must never be committed.
 
-Only admins can change a user's `role` or a cat's `owner`.
+## Running
 
-## Validation and error handling (assignment 7)
+```bash
+npm run dev    # nodemon, restarts on changes
+npm start      # plain node
+```
 
-- All errors are returned as JSON: `{"error": {"message": "...", "status": 400}}`. Controllers and middlewares pass errors on with `next(error)` and `src/middlewares/error-handlers.js` handles them (`notFoundHandler`, `errorHandler`, `validationErrors`).
+The server runs at `http://127.0.0.1:3000/`. Static files are served from `public/`, uploaded files go to `uploads/` (contents ignored by Git). Lint with `npx eslint .`.
+
+Ready-made requests for the VS Code REST Client are in [test/test-requests.http](test/test-requests.http).
+
+## Project structure
+
+```
+src/
+├── app.js                  # Express app, global middleware, error handlers
+├── api/
+│   ├── index.js            # Mounts routers under /api/v1
+│   ├── routes/             # cat-router, user-router, auth-router
+│   ├── controller/         # Request handling
+│   └── model/              # Database queries (mock models kept for reference)
+├── middlewares/
+│   ├── authentication.js   # authenticateToken (JWT)
+│   ├── error-handlers.js   # notFoundHandler, errorHandler, validationErrors
+│   ├── upload.js           # multer config + sharp thumbnail
+│   ├── logger.js
+│   └── request-time.js
+└── utils/database.js       # MySQL connection pool
+```
+
+## API
+
+Base URL: `/api/v1`
+
+| Method and path | Description | Access |
+| --- | --- | --- |
+| `POST /auth/login` | Log in with `username` and `password`, returns `{user, token}` (valid 24 h) | public |
+| `GET /auth/me` | Returns the user stored in the token | valid token |
+| `GET /cats` | List cats | public |
+| `GET /cats/:id` | Get one cat | public |
+| `POST /cats` | Add a cat (multipart form: `cat_name`, `weight`, `birthdate`, file field `image`). The owner is always the logged-in user | valid token |
+| `PUT /cats/:id` | Update a cat | owner or admin |
+| `DELETE /cats/:id` | Delete a cat | owner or admin |
+| `GET /users` | List users | public |
+| `GET /users/:id` | Get one user | public |
+| `POST /users` | Register a user (password is stored as a bcrypt hash) | public |
+| `PUT /users/:id` | Update a user | the user or admin |
+| `DELETE /users/:id` | Delete a user | the user or admin |
+
+Send the token in the header `Authorization: Bearer <token>`.
+
+## Authentication and authorization
+
+- Passwords are hashed with bcrypt (10 salt rounds). Login returns a JWT signed with `JWT_SECRET`; the password is never returned.
+- `authenticateToken` verifies the token and stores the payload (`user_id`, `name`, `username`, `email`, `role`) in `res.locals.user`.
+- Rules:
+  - A regular user can update or delete only their own cats (`owner = user_id`, checked in the SQL query) and their own user account.
+  - An admin can update or delete any cat or user.
+  - Only an admin can change a user's `role` or a cat's `owner`.
+- Status codes: missing token `401`, invalid or expired token `403`, wrong credentials `401`, modifying another user `403`, modifying a cat you do not own `404` (cat not found or not yours).
+
+## Validation and error handling
+
+- All errors are returned as JSON: `{"error": {"message": "...", "status": 400}}`. Controllers and middlewares pass errors on with `next(error)` and `src/middlewares/error-handlers.js` handles them. Unknown routes return `404`; unexpected errors return `500` (details only in the server log).
 - Input is validated and sanitized with [express-validator](https://express-validator.github.io/docs/):
-  - Users (`POST`, `PUT`): name, username (3-20 alphanumeric), email, password (min 8 chars), role (`user` or `admin`).
-  - Cats (`POST`, `PUT`): cat_name (3-50 chars), weight (0.1-100), birthdate (ISO date). The owner comes from the token.
+  - Users: name, username (3-20 letters or numbers), email, password (min 8 characters), role (`user` or `admin`).
+  - Cats: cat_name (3-50 characters), weight (0.1-100), birthdate (ISO date).
   - Login: username and password required.
-  - `:id` route parameters must be positive integers.
-- File uploads (multer): images and videos only, max 10 MB. Thumbnails are created for images.
-- Invalid input returns `400`, unknown routes `404`, unexpected errors `500` (details only in the server log).
+  - `:id` parameters must be positive integers. On `PUT` the body fields are optional.
+- File uploads (multer): images and videos only, max 10 MB. A 160x160 PNG thumbnail (`<filename>_thumb`) is created for images using sharp.
+
+## Assignments
+
+Each week 3 assignment was developed in its own branch and merged to `main`:
+
+| Branch | Topic |
+| --- | --- |
+| `assignment1` | Express hello world, static files, cats JSON |
+| `assignment2` | Routers, controllers and mock models for cats and users |
+| `assignment3` | File upload with multer |
+| `assignment4` | Thumbnails with sharp middleware |
+| `assignment5` | MySQL database access |
+| `assignment6` | JWT authentication and authorization |
+| `assignment7` | Input validation and error handling |
