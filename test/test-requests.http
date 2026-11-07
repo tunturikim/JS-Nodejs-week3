@@ -101,3 +101,6 @@ Content-Type: application/json
     "email": "mikko.koira@example.com",
     "role": "admin"
 }
+
+### cats of a user
+GET {{apiUrl}}/users/37/cats

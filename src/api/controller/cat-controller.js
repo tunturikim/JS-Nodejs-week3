@@ -4,6 +4,7 @@ import {
   addCat,
   removeCatById,
   modifyCatById,
+  listCatsByUserId,
 } from '../model/cat-model.js';
 
 export const getCats = async (req, res) => {
@@ -63,4 +64,9 @@ export const putCatById = async (req, res) => {
   } else {
     res.status(404).json({error: '404', message: 'Cat not found'});
   }
+};
+
+export const getCatsByUserId = async (req, res) => {
+  const cats = await listCatsByUserId(req.params.id);
+  res.json(cats);
 };

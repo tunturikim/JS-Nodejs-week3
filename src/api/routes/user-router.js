@@ -6,11 +6,14 @@ import {
   deleteUserById,
   putUserById,
 } from '../controller/user-controller.js';
+import {getCatsByUserId} from '../controller/cat-controller.js';
 
 const userRouter = express.Router();
 // Bind the getUsers function to the GET/POST request for the /users route
 userRouter.route('/').get(getUsers).post(postUser);
 // Bind the getUserById function to the GET request for the /users/:id route
+// All cats of one user
+userRouter.route('/:id/cats').get(getCatsByUserId);
 userRouter
   .route('/:id')
   .get(getUserById)

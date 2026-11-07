@@ -4,15 +4,15 @@ import {
   addUser,
   removeUserById,
   modifyUserById,
-} from '../model/user.model.js';
+} from '../model/user-model.js';
 
-export const getUsers = (req, res) => {
-  res.json(listAllUsers());
+export const getUsers = async (req, res) => {
+  const users = await listAllUsers();
+  res.json(users);
 };
 
-export const getUserById = (req, res) => {
-  const id = req.params.id;
-  const user = findUserById(id);
+export const getUserById = async (req, res) => {
+  const user = await findUserById(req.params.id);
   if (user) {
     res.status(200).json(user);
   } else {
@@ -20,14 +20,18 @@ export const getUserById = (req, res) => {
   }
 };
 
-export const postUser = (req, res) => {
-  console.log('request body', req.body);
-  const newId = addUser(req.body);
-  res.status(201).json({user_id: newId});
+export const postUser = async (req, res) => {
+  const result = await addUser(req.body);
+  if (result) {
+    res.status(201).json({message: 'New user added.', result});
+  } else {
+    res.sendStatus(400);
+  }
 };
 
-export const deleteUserById = (req, res) => {
-  const result = removeUserById(req.params.id);
+export const deleteUserById = async (req, res) => {
+  // Also deletes the user's cats (transaction in the model)
+  const result = await removeUserById(req.params.id);
   if (result) {
     res.status(200).json({message: 'User deleted successfully'});
   } else {
@@ -35,8 +39,8 @@ export const deleteUserById = (req, res) => {
   }
 };
 
-export const putUserById = (req, res) => {
-  const result = modifyUserById(req.params.id, req.body);
+export const putUserById = async (req, res) => {
+  const result = await modifyUserById(req.params.id, req.body);
   if (result) {
     res.status(200).json({message: 'User updated successfully'});
   } else {
