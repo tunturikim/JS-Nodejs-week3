@@ -21,7 +21,11 @@ catRouter
   .get(logger, getCats)
   .post(authenticateToken, upload.single('image'), createThumbnail, postCat);
 // Bind the getCatById function to the GET request for the /cats/:id route
-catRouter.route('/:id').get(getCatById).delete(deleteCatById).put(putCatById);
+catRouter
+  .route('/:id')
+  .get(getCatById)
+  .delete(authenticateToken, deleteCatById)
+  .put(authenticateToken, putCatById);
 
 export default catRouter;
 

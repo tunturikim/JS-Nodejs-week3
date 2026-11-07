@@ -31,4 +31,12 @@
    res.json({user: userWithNoPassword, token});
  };
 
- export {postLogin};
+ const getMe = (req, res) => {
+  if (res.locals.user) {
+    res.json({message: 'token ok', user: res.locals.user});
+  } else {
+    res.sendStatus(401);
+  }
+};
+
+export {postLogin, getMe};

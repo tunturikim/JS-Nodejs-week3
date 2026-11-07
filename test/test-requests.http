@@ -39,7 +39,7 @@ Content-Type: application/json
 ### post cat with image
 POST http://127.0.0.1:3000/api/v1/cats HTTP/1.1
 Content-Type: multipart/form-data; boundary=MyBoundary
-Authorization: Bearer <jwt-token>
+Authorization: Bearer {{login.response.body.token}}
 
 --MyBoundary
 Content-Disposition: form-data; name="cat_name"
@@ -49,10 +49,6 @@ Misu
 Content-Disposition: form-data; name="weight"
 
 6
---MyBoundary
-Content-Disposition: form-data; name="owner"
-
-37
 --MyBoundary
 Content-Disposition: form-data; name="birthdate"
 
@@ -85,7 +81,7 @@ DELETE {{apiUrl}}/users/3609
 GET {{apiUrl}}/users/999
 
 ### post new user
-POST {{apiUrl}}/auth/login
+POST {{apiUrl}}/users
 Content-Type: application/json
 
 {
@@ -104,4 +100,42 @@ Content-Type: application/json
     "username": "mikko_koira",
     "email": "mikko.koira@example.com",
     "role": "admin"
+}
+
+
+### ---AUTH---
+### login
+# @name login
+POST {{apiUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "username": "MattiMeikalainen",
+    "password": "password123"
+}
+
+### get my info (requires token)
+GET {{apiUrl}}/auth/me
+Authorization: Bearer {{login.response.body.token}}
+
+### edit cat (owner/admin only)
+PUT {{apiUrl}}/cats/59
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+    "weight": 5.0
+}
+
+### delete cat (owner/admin only)
+DELETE {{apiUrl}}/cats/59
+Authorization: Bearer {{login.response.body.token}}
+
+### edit own user
+PUT {{apiUrl}}/users/{{login.response.body.user.user_id}}
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+    "email": "new.email@example.com"
 }

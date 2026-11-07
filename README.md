@@ -83,3 +83,23 @@ npx eslint . --fix
 - `node_modules`, `.vscode`, `.idea` and `.DS_Store` are ignored by Git (see `.gitignore`).
 - If ESLint warnings do not show up in the editor, make sure `npm install` has been run in the project folder.
  
+
+## Authentication and authorization (assignment 6)
+
+Required `.env` variables: `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` and `JWT_SECRET` (long random string used to sign tokens).
+
+Passwords are stored as bcrypt hashes. `POST /api/v1/auth/login` returns a JWT (valid 24 h). Send it to protected routes in the header `Authorization: Bearer <token>`.
+
+| Route | Access |
+| --- | --- |
+| `POST /api/v1/auth/login` | public |
+| `GET /api/v1/auth/me` | valid token |
+| `GET /api/v1/cats`, `GET /api/v1/cats/:id` | public |
+| `POST /api/v1/cats` | valid token; the owner is always the logged-in user |
+| `PUT`/`DELETE /api/v1/cats/:id` | the cat's owner or an admin |
+| `GET /api/v1/users`, `GET /api/v1/users/:id`, `POST /api/v1/users` | public |
+| `PUT`/`DELETE /api/v1/users/:id` | the user themselves or an admin |
+
+Status codes: missing token `401`, invalid or expired token `403`, wrong credentials `401`, modifying another user `403`, modifying a cat you do not own `404` (cat not found or not yours).
+
+Only admins can change a user's `role` or a cat's `owner`.

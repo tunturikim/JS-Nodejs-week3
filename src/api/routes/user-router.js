@@ -7,6 +7,8 @@ import {
   putUserById,
 } from '../controller/user-controller.js';
 
+import {authenticateToken} from '../../middlewares/authentication.js';
+
 const userRouter = express.Router();
 // Bind the getUsers function to the GET/POST request for the /users route
 userRouter.route('/').get(getUsers).post(postUser);
@@ -14,7 +16,7 @@ userRouter.route('/').get(getUsers).post(postUser);
 userRouter
   .route('/:id')
   .get(getUserById)
-  .delete(deleteUserById)
-  .put(putUserById);
+  .delete(authenticateToken, deleteUserById)
+  .put(authenticateToken, putUserById);
 
 export default userRouter;
