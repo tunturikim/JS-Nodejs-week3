@@ -5,13 +5,17 @@ const authenticateToken = (req, res, next) => {
    const authHeader = req.headers['authorization'];
    const token = authHeader && authHeader.split(' ')[1];
    if (token == null) {
-     return res.sendStatus(401);
+     const error = new Error('Authentication token missing');
+     error.status = 401;
+     return next(error);
    }
    try {
      res.locals.user = jwt.verify(token, process.env.JWT_SECRET);
      next();
    } catch {
-     res.status(403).send({message: 'invalid token'});
+     const error = new Error('Invalid token');
+     error.status = 403;
+     next(error);
    }
  };
 

@@ -103,3 +103,14 @@ Passwords are stored as bcrypt hashes. `POST /api/v1/auth/login` returns a JWT (
 Status codes: missing token `401`, invalid or expired token `403`, wrong credentials `401`, modifying another user `403`, modifying a cat you do not own `404` (cat not found or not yours).
 
 Only admins can change a user's `role` or a cat's `owner`.
+
+## Validation and error handling (assignment 7)
+
+- All errors are returned as JSON: `{"error": {"message": "...", "status": 400}}`. Controllers and middlewares pass errors on with `next(error)` and `src/middlewares/error-handlers.js` handles them (`notFoundHandler`, `errorHandler`, `validationErrors`).
+- Input is validated and sanitized with [express-validator](https://express-validator.github.io/docs/):
+  - Users (`POST`, `PUT`): name, username (3-20 alphanumeric), email, password (min 8 chars), role (`user` or `admin`).
+  - Cats (`POST`, `PUT`): cat_name (3-50 chars), weight (0.1-100), birthdate (ISO date). The owner comes from the token.
+  - Login: username and password required.
+  - `:id` route parameters must be positive integers.
+- File uploads (multer): images and videos only, max 10 MB. Thumbnails are created for images.
+- Invalid input returns `400`, unknown routes `404`, unexpected errors `500` (details only in the server log).

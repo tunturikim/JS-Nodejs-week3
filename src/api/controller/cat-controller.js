@@ -22,20 +22,24 @@ export const getWelcomeMessage = (req, res) => {
   res.send('Welcome to my REST API, moi!');
 };
 
-export const getCatById = async (req, res) => {
+export const getCatById = async (req, res, next) => {
   const id = req.params.id;
   const cat = await findCatById(id);
   if (cat) {
     res.status(200).json(cat);
   } else {
-    res.status(404).json({error: '404', message: 'Cat not found'});
+    const error = new Error('Cat not found');
+    error.status = 404;
+    next(error);
   }
 };
 
-export const postCat = async (req, res) => {
-  console.log('request', req.body);
-  console.log(req.file);
-  console.log(req.file.filename);
+export const postCat = async (req, res, next) => {
+  if (!req.file) {
+    const error = new Error('Invalid or missing file');
+    error.status = 400;
+    return next(error);
+  }
   req.body.filename = req.file.filename;
   // The owner is always the logged-in user
   req.body.owner = res.locals.user.user_id;
@@ -45,20 +49,24 @@ export const postCat = async (req, res) => {
     res.status(201);
     res.json({message: 'New cat added.', result});
   } else {
-    res.sendStatus(400);
+    const error = new Error('Could not add cat');
+    error.status = 400;
+    next(error);
   }
 };
 
-export const deleteCatById = async(req, res) => {
+export const deleteCatById = async (req, res, next) => {
   const result = await removeCatById(req.params.id, res.locals.user);
   if (result) {
     res.status(200).json({message: 'Cat deleted successfully'});
   } else {
-    res.status(404).json({error: '404', message: 'Cat not found or not yours'});
+    const error = new Error('Cat not found or not yours');
+    error.status = 404;
+    next(error);
   }
 };
 
-export const putCatById = async (req, res) => {
+export const putCatById = async (req, res, next) => {
   // Only admin may change the owner of a cat
   if (res.locals.user.role !== 'admin') {
     delete req.body.owner;
@@ -67,6 +75,8 @@ export const putCatById = async (req, res) => {
   if (result) {
     res.status(200).json({message: 'Cat updated successfully'});
   } else {
-    res.status(404).json({error: '404', message: 'Cat not found or not yours'});
+    const error = new Error('Cat not found or not yours');
+    error.status = 404;
+    next(error);
   }
 };

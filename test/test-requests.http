@@ -139,3 +139,33 @@ Content-Type: application/json
 {
     "email": "new.email@example.com"
 }
+
+### ---VALIDATION / ERRORS---
+### invalid user (should be 400)
+POST {{apiUrl}}/users
+Content-Type: application/json
+
+{
+    "username": "a!",
+    "email": "not-an-email",
+    "password": "short"
+}
+
+### empty user body (400)
+POST {{apiUrl}}/users
+Content-Type: application/json
+
+{}
+
+### cat without file (400)
+POST {{apiUrl}}/cats
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{}
+
+### unknown route (404 JSON)
+GET {{apiUrl}}/nonexistent
+
+### invalid id (400)
+GET {{apiUrl}}/cats/abc
