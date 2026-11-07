@@ -119,7 +119,7 @@ GET {{apiUrl}}/auth/me
 Authorization: Bearer {{login.response.body.token}}
 
 ### edit cat (owner/admin only)
-PUT {{apiUrl}}/cats/59
+PUT {{apiUrl}}/cats/43
 Authorization: Bearer {{login.response.body.token}}
 Content-Type: application/json
 
@@ -128,7 +128,7 @@ Content-Type: application/json
 }
 
 ### delete cat (owner/admin only)
-DELETE {{apiUrl}}/cats/59
+DELETE {{apiUrl}}/cats/43
 Authorization: Bearer {{login.response.body.token}}
 
 ### edit own user
